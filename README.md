@@ -2,7 +2,16 @@
 Let Mycroft join you at LCA
 
 ## About
-Anything your Mycroft instance speaks will be published to your LinuxConfAu Swag Badge (or other MQTT compatible device).
+Provide interaction between Mycroft and a Swag Badge.
+
+For more details on the Swag Badge from LinuxConfAu 2021 see: http://www.openhardwareconf.org/wiki/Swagbadge2021
+
+Implemented:
+- [x] Publish your Mycroft's speech to your Swag Badge.
+
+TODO:
+- [ ] Create badge application to handle display, rather than logging line by line.
+- [ ] Use badge inputs to control your Mycroft device - activation, volume, media controls.
 
 ## Credits
 krisgesling
@@ -11,6 +20,7 @@ krisgesling
 **IoT**
 
 ## Tags
-#Lca
+#LCA2021
 #Swagbadge
+#MQTT
 
