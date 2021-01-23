@@ -1,22 +1,14 @@
 
 skillMetadata:
   sections:
-    - name: Options << Name of section
+    - name: Connection details
       fields:
-        - name: internal_python_variable_name
+        - name: mqtt_host
           type: text
-          label: Setting Friendly Display Name
-          value: ""
-          placeholder: demo prompt in the input box
-    - name: Login << Name of another section
-      fields:
-        - type: label
-          label: Just a little bit of extra info for the user to understand following settings
-        - name: username
+          label: MQTT Host Server
+          value: "101.181.46.180"
+        - name: badge_id
           type: text
-          label: Username
+          label: Badge ID
           value: ""
-        - name: password
-          type: password
-          label: Password
-          value: ""
+          placeholder: esp32_xxxxxxxxxxxx
