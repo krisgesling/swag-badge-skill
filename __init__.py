@@ -1,3 +1,4 @@
+import os
 from subprocess import call
 from mycroft import MycroftSkill
 from .badge import MQTT_Client
@@ -21,6 +22,7 @@ class SwagBadge(MycroftSkill):
         self.settings_change_callback = self.on_settings_changed
         self.on_settings_changed()
         self.add_event("speak", self.send_text_block)
+        self.display_image()
 
     def on_settings_changed(self):
         host = self.settings.get("mqtt_host")
@@ -60,6 +62,11 @@ class SwagBadge(MycroftSkill):
             if not success:
                 self.log.error(msg)
                 break
+    
+    def display_image(self, image="m32.png"):
+        """Display an image on the Badge screen."""
+        image_path = os.path.join(self.root_dir, "images", image)
+        self.mqttc.render_image(image_path)
 
     def shutdown(self):
         self.mqttc.disconnect()

@@ -8,6 +8,7 @@ For more details on the Swag Badge from LinuxConfAu 2021 see: http://www.openhar
 
 Implemented:
 - [x] Publish your Mycroft's speech to your Swag Badge.
+- [x] Publish an image to the Badge.
 
 TODO:
 - [ ] Create badge application to handle display, rather than logging line by line.

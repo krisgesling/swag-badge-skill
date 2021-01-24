@@ -1,4 +1,6 @@
 import paho.mqtt.client as mqtt
+from mycroft.util import LOG
+from ..util import image_to_pixels
 
 
 class MQTT_Client:
@@ -53,10 +55,22 @@ class MQTT_Client:
                 Bool: A boolean of whether the request was made
                 Str: Descriptive message
         """
+        payload = f"(oled:log {text})"
+        return self.publish(payload)
+
+    def render_image(self, image):
+        self.publish("(oled:clear)")
+        pixels = image_to_pixels(image)
+        for pixel in pixels:
+            x, y = pixel
+            payload = f"(oled:pixel {x} {y})"
+            LOG.info(payload)
+            self.publish(payload)
+
+    def publish(self, payload):
         host = self.get_host()
         port = self.get_port()
         topic = self.get_topic()
-        payload = f"(oled:log {text})"
         if host and topic:
             self.mqttc.connect(host, port)
             self.mqttc.publish(topic, payload)
@@ -64,7 +78,8 @@ class MQTT_Client:
             return (True, "SUCCESS")
         else:
             failure_msg = (
-                "Could not publish speech to Swag Badge. "
+                "Could not publish payload to Swag Badge. "
                 "Please check your Skill settings at https://home.mycroft.ai"
             )
             return (False, failure_msg)
+
