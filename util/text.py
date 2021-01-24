@@ -1,3 +1,5 @@
+"""A collection of text manipulation utilities."""
+
 def wrap_text(text, line_length):
     """Wrap a string of text based on the given line length.
 
