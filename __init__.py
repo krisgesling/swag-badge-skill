@@ -14,6 +14,7 @@ class SwagBadge(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
         self.LINE_LENGTH = 32
+        self.NUM_SCREENS = 2
         self.mqttc = None
 
     def initialize(self):
@@ -44,9 +45,16 @@ class SwagBadge(MycroftSkill):
         text = message.data.get("utterance")
         if not text:
             return
-        lines_per_screen = wrap_text(text, self.LINE_LENGTH / 2)
-        padded_lines = [ l.ljust(int(self.LINE_LENGTH / 2)) for l in lines_per_screen ]
-        lines = [ x+y for x,y in zip(padded_lines[0::2], padded_lines[1::2]) ]
+        chars = int(self.LINE_LENGTH / self.NUM_SCREENS)
+        lines_per_screen = wrap_text(text, chars)
+        # Add spaces to log correctly across multiple screens.
+        padded_lines = [f"{l: <{chars}}" for l in lines_per_screen]
+        lines = [
+            x + y
+            for x, y in zip(
+                padded_lines[0 :: self.NUM_SCREENS], padded_lines[1 :: self.NUM_SCREENS]
+            )
+        ]
         for line in lines:
             success, msg = self.mqttc.log_to_oled(line)
             if not success:
