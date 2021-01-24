@@ -54,10 +54,11 @@ class MQTT_Client:
                 Str: Descriptive message
         """
         host = self.get_host()
+        port = self.get_port()
         topic = self.get_topic()
         payload = f"(oled:log {text})"
         if host and topic:
-            self.mqttc.connect(host)
+            self.mqttc.connect(host, port)
             self.mqttc.publish(topic, payload)
             self.mqttc.disconnect()
             return (True, "SUCCESS")
