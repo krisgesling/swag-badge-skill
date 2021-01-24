@@ -1,6 +1,6 @@
 from subprocess import call
-import paho.mqtt.client as mqtt
 from mycroft import MycroftSkill
+from .badge import MQTT_Client
 from .util import wrap_text
 
 
@@ -13,31 +13,33 @@ class SwagBadge(MycroftSkill):
 
     def __init__(self):
         MycroftSkill.__init__(self)
-        self.LINE_LENGTH = 31
+        self.LINE_LENGTH = 32
         self.mqttc = None
 
     def initialize(self):
+        self.settings_change_callback = self.on_settings_changed
+        self.on_settings_changed()
         self.add_event("speak", self.send_text_block)
-        self.mqttc = mqtt.Client()
+
+    def on_settings_changed(self):
+        host = self.settings.get("mqtt_host")
+        if host:
+            if self.mqttc:
+                self.mqttc.disconnect()
+            self.mqttc = MQTT_Client(host)
+
+        badge_id = self.settings.get("badge_id")
+        if badge_id:
+            self.mqttc.set_topic(f"public/{badge_id}/0/in")
 
     def send_text_block(self, message):
         text = message.data["utterance"]
         lines = wrap_text(text, self.LINE_LENGTH)
         for line in lines:
-            self.log_to_oled(line)
-
-    def log_to_oled(self, text):
-        mqtt_host = self.settings.get("mqtt_host")
-        badge_id = self.settings.get("badge_id")
-        topic = f"public/{badge_id}/0/in"
-        payload = f"(oled:log {text})"
-        if mqtt_host and badge_id:
-            self.mqttc.connect(mqtt_host)
-            self.mqttc.publish(topic, payload)
-            self.mqttc.disconnect()
-        else:
-            self.log.info("Could not publish speech to Swag Badge")
-            self.log.info("Please check your Skill settings at https://home.mycroft.ai")
+            success, msg = self.mqttc.log_to_oled(line)
+            if not success:
+                self.log.error(msg)
+                break
 
     def shutdown(self):
         self.mqttc.disconnect()
