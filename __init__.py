@@ -33,8 +33,20 @@ class SwagBadge(MycroftSkill):
             self.mqttc.set_topic(f"public/{badge_id}/0/in")
 
     def send_text_block(self, message):
-        text = message.data["utterance"]
-        lines = wrap_text(text, self.LINE_LENGTH)
+        """Send utterance to Badge.
+
+        Splits text based on line length and prevents words being split
+        between the two screens.
+
+        Arguments:
+            message (Message): standard Mycroft Message object
+        """
+        text = message.data.get("utterance")
+        if not text:
+            return
+        lines_per_screen = wrap_text(text, self.LINE_LENGTH / 2)
+        padded_lines = [ l.ljust(int(self.LINE_LENGTH / 2)) for l in lines_per_screen ]
+        lines = [ x+y for x,y in zip(padded_lines[0::2], padded_lines[1::2]) ]
         for line in lines:
             success, msg = self.mqttc.log_to_oled(line)
             if not success:
